@@ -1,8 +1,8 @@
 export interface CreateRecipeDto {
-  name: String;
-  ingredientes: String[];
-  modoPreparo: String;
+  name: string;
+  ingredientes: string[];
+  modoPreparo: string;
   tempoPreparo: number;
-  dificuldade: String;
+  dificuldade: string;
   userId: number;
 }

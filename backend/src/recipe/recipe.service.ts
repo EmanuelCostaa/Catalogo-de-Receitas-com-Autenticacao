@@ -8,7 +8,6 @@ export class RecipeService {
   constructor(private readonly pismaService: PrismaService) {}
 
   create(createRecipeDto: CreateRecipeDto) {
-    const userId = createRecipeDto.userId;
     return this.pismaService.recipe.create({
       data: createRecipeDto,
     });
