@@ -3,6 +3,6 @@ export interface CreateRecipeDto {
   ingredientes: string[];
   modoPreparo: string;
   tempoPreparo: number;
-  dificuldade: string;
+  dificuldade: number;
   userId: number;
 }

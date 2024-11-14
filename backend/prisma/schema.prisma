@@ -19,7 +19,7 @@ model Recipe {
   ingredientes String[]
   modoPreparo  String
   tempoPreparo Int
-  dificuldade  String
+  dificuldade  Int
   data         DateTime @default(now())
   isDeleted    Boolean  @default(false)
   userId       Int
