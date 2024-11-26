@@ -35,4 +35,23 @@ export class RecipeService {
       where: { id },
     });
   }
+
+  findWithFilters(filters: Partial<CreateRecipeDto>) {
+    return this.pismaService.recipe.findMany({
+      where: {
+        ...(filters.name && {
+          name: { contains: filters.name, mode: 'insensitive' },
+        }),
+        ...(filters.ingredientes && {
+          ingredientes: { hasSome: filters.ingredientes },
+        }),
+        ...(filters.modoPreparo && {
+          modoPreparo: { contains: filters.modoPreparo, mode: 'insensitive' },
+        }),
+        ...(filters.tempoPreparo && { tempoPreparo: filters.tempoPreparo }),
+        ...(filters.dificuldade && { dificuldade: filters.dificuldade }),
+        ...(filters.userId && { userId: filters.userId }),
+      },
+    });
+  }
 }

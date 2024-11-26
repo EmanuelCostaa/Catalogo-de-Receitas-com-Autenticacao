@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { RecipeService } from './recipe.service';
 import { CreateRecipeDto } from './dto/create-recipe.dto';
@@ -38,5 +39,10 @@ export class RecipeController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.recipeService.remove(+id);
+  }
+
+  @Get('search')
+  search(@Query() filters: Partial<CreateRecipeDto>) {
+    return this.recipeService.findWithFilters(filters);
   }
 }
