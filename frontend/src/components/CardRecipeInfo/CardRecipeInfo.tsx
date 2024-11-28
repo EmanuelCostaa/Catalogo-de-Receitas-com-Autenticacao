@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable react/jsx-no-undef */
 import Image from "next/image";
-import { useRouter } from "next/router";
+import Button from "../Button/Button";
 
 function TagDificuldade({ dificuldade }: { dificuldade: number }) {
   const difficultyClass = (dificuldade: number) => {
@@ -34,24 +36,22 @@ function TagDificuldade({ dificuldade }: { dificuldade: number }) {
         dificuldade
       )}`}
     >
-      {getText(dificuldade)}
+      {getText(dificuldade)} {/* Exibe o texto correspondente à dificuldade */}
     </span>
   );
 }
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-export default function CardRecipe({ recipe }: any) {
-  const router = useRouter();
-
-  const openRecipe = () => {
-    router.push(`/RecipeInfo/RecipeInfo?recipeId=${recipe.id}`);
-  };
+function editRecipe() {}
+export default function CardRecipeInfo({
+  recipe,
+  user,
+}: {
+  recipe: any;
+  user: any;
+}) {
   return (
-    <div
-      className="flex-col w-96 h-64 rounded-3xl bg-yellow-200 overflow-hidden shadow-lg hover:cursor-pointer"
-      onClick={openRecipe}
-    >
-      <div className="h-1/2 ">
+    <div className="flex w-9/12 h-3/6 rounded-3xl bg-yellow-200 overflow-hidden shadow-lg hover:cursor-pointer">
+      <div className="w-1/2 ">
         <Image
           src="/pratoDefault.png"
           alt="RecipeImage"
@@ -61,22 +61,33 @@ export default function CardRecipe({ recipe }: any) {
         />
       </div>
 
-      <div className="h-1/2 p-4 flex flex-col justify-between">
+      <div className="w-1/2 p-4 flex flex-col gap-11 justify-between">
         <div className="flex gap-3">
           <h2 className="text-lg font-bold truncate">{recipe.name}</h2>
           <TagDificuldade dificuldade={recipe.dificuldade as number} />
         </div>
+        <p className="text-sm">
+          <span className="font-bold">Postada por: </span>
+          {user.name}
+        </p>
 
-        <p className="text-sm truncate">
+        <p className="text-sm">
           <span className=" font-bold">Ingredientes: </span>
           {recipe.ingredientes.join(", ")}
         </p>
-        <p className="text-sm truncate">
+        <p className="text-sm">
           <span className=" font-bold">Modo: </span> {recipe.modoPreparo}
         </p>
-        <div className="flex gap-1">
-          <Image src="/clock.png" alt="ClockIcon" width={20} height={20} />
-          <p className="text-sm"> {recipe.tempoPreparo}m</p>
+        <div className="flex justify-between">
+          <div className="flex gap-1">
+            <Image src="/clock.png" alt="ClockIcon" width={40} height={40} />
+            <p className="text-lg self-center"> {recipe.tempoPreparo}m</p>
+          </div>
+          <Button
+            color={"yellow"}
+            text={"Editar receita"}
+            onClick={editRecipe}
+          />
         </div>
       </div>
     </div>

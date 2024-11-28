@@ -12,8 +12,8 @@ import Footer from "@/components/Footer/Footer";
 
 export default function Home() {
   const [recipes, setRecipes] = useState<any>([]);
-  const [searchValue, setSearchValue] = useState("");
-  const [selectValue, setSelectValue] = useState(0);
+  const [searchValue, setSearch] = useState("");
+  const [selectValue, setSelect] = useState(0);
 
   const addRecipe = () => {
     console.log("clicou");
@@ -36,8 +36,8 @@ export default function Home() {
         AQUI VOCÊ ENCONTRA AS MELHORES RECEITAS!
       </h1>
       <div className="flex gap-10 mt-4 ml-3">
-        <SearchInput onSearchSubmit={(search) => setSearchValue(search)} />
-        <SelectInput onDifficultyChange={(select) => setSelectValue(select)} />
+        <SearchInput onSearchSubmit={(search) => setSearch(search)} />
+        <SelectInput onDifficultyChange={(select) => setSelect(select)} />
         <Button
           text={"Adicionar Receita +"}
           color={"green"}
