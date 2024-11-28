@@ -54,14 +54,16 @@ export default function RecipeInfo() {
   };
 
   return (
-    <div className="p-4">
+    <div>
       <Header />
-      <div className="flex mt-10 mb-14 justify-center">
-        {recipe && user ? (
-          <CardRecipeInfo recipe={recipe} user={user} />
-        ) : (
-          <p>Carregando dados...</p>
-        )}
+      <div className="p-4">
+        <div className="flex mt-10 mb-14 justify-center">
+          {recipe && user ? (
+            <CardRecipeInfo recipe={recipe} user={user} />
+          ) : (
+            <p>Carregando dados...</p>
+          )}
+        </div>
       </div>
       <Footer />
     </div>

@@ -2,6 +2,7 @@
 /* eslint-disable react/jsx-no-undef */
 import Image from "next/image";
 import Button from "../Button/Button";
+import { useRouter } from "next/router";
 
 function TagDificuldade({ dificuldade }: { dificuldade: number }) {
   const difficultyClass = (dificuldade: number) => {
@@ -41,7 +42,6 @@ function TagDificuldade({ dificuldade }: { dificuldade: number }) {
   );
 }
 
-function editRecipe() {}
 export default function CardRecipeInfo({
   recipe,
   user,
@@ -49,6 +49,11 @@ export default function CardRecipeInfo({
   recipe: any;
   user: any;
 }) {
+  const router = useRouter();
+
+  function editRecipe() {
+    router.push(`/CreateRecipe/CreateRecipe`);
+  }
   return (
     <div className="flex w-9/12 h-3/6 rounded-3xl bg-yellow-200 overflow-hidden shadow-lg hover:cursor-pointer">
       <div className="w-1/2 ">

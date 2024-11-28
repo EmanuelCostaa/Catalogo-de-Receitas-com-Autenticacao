@@ -7,9 +7,12 @@ export default function Header() {
   function goToMyAccount() {
     router.push(`/MyAccount/MyAccount`);
   }
+  function goHome() {
+    router.push(`/`);
+  }
   return (
     <div className="flex justify-between bg-red-700 h-28 ">
-      <div className="logo pl-4 self-center cursor-pointer">
+      <div className="logo pl-4 self-center cursor-pointer" onClick={goHome}>
         <Image
           src="/LogoFundoColorido.png"
           width={120}

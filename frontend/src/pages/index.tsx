@@ -9,14 +9,16 @@ import SearchInput from "@/components/SearchInput/SearchInput";
 import SelectInput from "@/components/SelectInput/SelectInput";
 import Button from "@/components/Button/Button";
 import Footer from "@/components/Footer/Footer";
+import { useRouter } from "next/router";
 
 export default function Home() {
   const [recipes, setRecipes] = useState<any>([]);
   const [searchValue, setSearch] = useState("");
   const [selectValue, setSelect] = useState(0);
+  const router = useRouter();
 
   const addRecipe = () => {
-    console.log("clicou");
+    router.push("/CreateRecipe/CreateRecipe");
   };
 
   useEffect(() => {

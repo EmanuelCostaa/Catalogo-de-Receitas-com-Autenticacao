@@ -2,9 +2,13 @@ import { useState } from "react";
 
 interface SelectInputProps {
   onDifficultyChange: (difficulty: number) => void;
+  labelUp: boolean;
 }
 
-export default function SelectInput({ onDifficultyChange }: SelectInputProps) {
+export default function SelectInput({
+  onDifficultyChange,
+  labelUp = false,
+}: SelectInputProps) {
   const [selectedDifficulty, setSelectedDifficulty] = useState<number>(0);
 
   const handleDifficultyChange = (
@@ -17,11 +21,10 @@ export default function SelectInput({ onDifficultyChange }: SelectInputProps) {
 
   return (
     <div className="flex items-center justify-center space-y-4">
-      <div className="flex items-center space-x-4">
-        <label
-          htmlFor="difficulty"
-          className="text-sm font-semibold text-yellow-700"
-        >
+      <div
+        className={`${labelUp ? "flex-col " : "flex items-center space-x-4"}`}
+      >
+        <label htmlFor="difficulty" className={`${labelUp && "pl-2 "}`}>
           Dificuldade:
         </label>
 
