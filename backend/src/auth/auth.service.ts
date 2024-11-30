@@ -28,7 +28,6 @@ export class AuthService {
   }
 
   async register(createUserDto: CreateUserDto) {
-    // Verifique se o usuário já existe
     const existingUser = await this.prismaService.user.findUnique({
       where: { email: createUserDto.email },
     });
@@ -36,10 +35,8 @@ export class AuthService {
       throw new Error('Usuário já registrado com este email.');
     }
 
-    // Hash da senha
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
 
-    // Criação do usuário
     const newUser = await this.prismaService.user.create({
       data: {
         email: createUserDto.email,

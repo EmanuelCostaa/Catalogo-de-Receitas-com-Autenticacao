@@ -31,7 +31,7 @@ export default function SearchInput({ onSearchSubmit }: SearchInputProps) {
         />
         <span
           className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
-          onClick={handleSearchSubmit} // Chama ao clicar na lupa
+          onClick={handleSearchSubmit}
         >
           <Image src="/search.png" width={25} height={10} alt="Search Icon" />
         </span>

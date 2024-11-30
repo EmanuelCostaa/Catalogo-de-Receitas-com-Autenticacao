@@ -40,7 +40,7 @@ function TagDificuldade({ dificuldade }: { dificuldade: number }) {
         dificuldade
       )}`}
     >
-      {getText(dificuldade)} {/* Exibe o texto correspondente à dificuldade */}
+      {getText(dificuldade)}
     </span>
   );
 }

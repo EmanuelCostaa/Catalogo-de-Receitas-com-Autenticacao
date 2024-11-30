@@ -58,15 +58,15 @@ export default function Login() {
 
   function parseJwt(token: string): JSON | null {
     try {
-      const base64Url = token.split(".")[1]; // Parte do payload
-      const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/"); // Ajusta caracteres
+      const base64Url = token.split(".")[1];
+      const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
       const jsonPayload = decodeURIComponent(
         atob(base64)
           .split("")
           .map((c) => `%${("00" + c.charCodeAt(0).toString(16)).slice(-2)}`)
           .join("")
       );
-      return JSON.parse(jsonPayload); // Converte para objeto JSON
+      return JSON.parse(jsonPayload);
     } catch (error) {
       alert("Ops! " + (error as Error).message);
       return null;

@@ -5,6 +5,6 @@ import { RecipeModule } from './src/recipe/recipe.module';
 import { AuthModule } from './src/auth/auth.module';
 
 @Module({
-  imports: [DbModule, UserModule, RecipeModule, AuthModule], // Importe todos os módulos que contêm controladores e serviços
+  imports: [DbModule, UserModule, RecipeModule, AuthModule],
 })
 export class AppModule {}
