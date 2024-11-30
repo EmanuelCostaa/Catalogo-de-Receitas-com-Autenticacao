@@ -1,3 +1,4 @@
+import recipeInterface from "@/interfaces/recipeInterface";
 import Image from "next/image";
 import { useRouter } from "next/router";
 
@@ -40,15 +41,19 @@ function TagDificuldade({ dificuldade }: { dificuldade: number }) {
 }
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-export default function CardRecipe({ recipe }: any) {
+interface CardRecipeProps {
+  recipe: recipeInterface;
+}
+
+export default function CardRecipe({ recipe }: CardRecipeProps) {
   const router = useRouter();
 
   const openRecipe = () => {
-    router.push(`/RecipeInfo/RecipeInfo?recipeId=${recipe.id}`);
+    router.push(`/receita/${recipe.id}`);
   };
   return (
     <div
-      className="flex-col w-1/3 h-64 rounded-3xl bg-yellow-200 overflow-hidden shadow-lg hover:cursor-pointer"
+      className="flex-col w-1/5 min-w-[200px] h-64 rounded-3xl bg-yellow-200 overflow-hidden shadow-lg hover:cursor-pointer"
       onClick={openRecipe}
     >
       <div className="h-1/2 ">

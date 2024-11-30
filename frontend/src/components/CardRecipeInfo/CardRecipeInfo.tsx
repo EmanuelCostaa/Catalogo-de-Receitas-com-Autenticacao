@@ -4,6 +4,8 @@ import Image from "next/image";
 import Button from "../Button/Button";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import userInterface from "@/interfaces/userInterface";
+import recipeInterface from "@/interfaces/recipeInterface";
 
 function TagDificuldade({ dificuldade }: { dificuldade: number }) {
   const difficultyClass = (dificuldade: number) => {
@@ -48,32 +50,28 @@ export default function CardRecipeInfo({
   user,
   recipeUser,
 }: {
-  recipe: any;
-  user: any;
-  recipeUser: any;
+  recipe: recipeInterface;
+  user: userInterface;
+  recipeUser: userInterface;
 }) {
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [loadingDelete, setIsLoadingDelete] = useState(false);
   const router = useRouter();
 
   function editRecipe() {
-    router.push(`/CreateRecipe/CreateRecipe?recipeId=${recipe.id}`);
+    router.push(`/editar-receita/${recipe.id}`);
   }
   async function softDeleteRecipe() {
     setIsLoadingDelete(true);
 
     try {
-      const recipeToSoftDelete = {
-        isDeleted: true,
-      };
       const response = await fetch(
         `http://localhost:3001/recipes/${recipe.id}`,
         {
-          method: "PATCH",
+          method: "DELETE",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(recipeToSoftDelete),
         }
       );
 
@@ -83,16 +81,16 @@ export default function CardRecipeInfo({
 
       alert("Receita deletada com sucesso!");
     } catch (error) {
-      alert("Ops! Erro ao deletar a receita.");
+      alert("Ops! " + (error as Error).message);
     }
     setIsLoadingDelete(false);
     setIsPopupVisible(false);
-    router.push(`/`);
+    router.push(`/menu`);
   }
 
   return (
-    <div className="flex w-9/12 h-3/6 rounded-3xl bg-yellow-200 overflow-hidden shadow-lg">
-      <div className="w-1/2 ">
+    <div className="flex w-9/12 sm:flex-row flex-col max-w-screen-sm:justify-center h-3/6 rounded-3xl bg-yellow-200 overflow-hidden shadow-lg min-w-[300px]">
+      <div className="sm:w-1/2  max-w-screen-sm:w-full max-w-screen-sm:h-1/2">
         <Image
           src="/pratoDefault.png"
           alt="RecipeImage"
@@ -102,7 +100,10 @@ export default function CardRecipeInfo({
         />
       </div>
 
-      <div className="w-1/2 p-4 flex flex-col gap-11 justify-between">
+      <div
+        className="sm:w-1/2 max-w-screen-sm:h-1/2 
+     xs max-w-screen-sm:w-full p-4 flex flex-col gap-11 justify-between sm:items-start items-center"
+      >
         <div className="flex gap-3 flex-wrap">
           <h2 className="text-lg font-bold truncate">{recipe.name}</h2>
           <TagDificuldade dificuldade={recipe.dificuldade as number} />
@@ -119,13 +120,13 @@ export default function CardRecipeInfo({
         <p className="text-sm">
           <span className=" font-bold">Modo: </span> {recipe.modoPreparo}
         </p>
-        <div className="flex justify-between">
-          <div className="flex gap-1">
+        <div className="flex flex-wrap gap-3 sm:self-stretch justify-center sm:justify-between">
+          <div className="flex gap-1 self-center">
             <Image src="/clock.png" alt="ClockIcon" width={40} height={40} />
             <p className="text-lg self-center"> {recipe.tempoPreparo} min</p>
           </div>
           {user.id == recipe.userId && (
-            <div className="flex gap-6">
+            <div className="flex gap-6 self-end">
               <div className=" hover:cursor-pointer">
                 <Image
                   src="/trash.png"

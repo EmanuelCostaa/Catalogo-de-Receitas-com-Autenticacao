@@ -2,42 +2,53 @@ import React from "react";
 
 interface SelectInputProps {
   value: number;
-  onDifficultyChange: (difficulty: number) => void;
+  onSelect: (difficulty: number) => void;
+  label?: string;
   labelUp?: boolean;
+  options: option[];
+}
+
+interface option {
+  label: string;
+  value: number;
 }
 
 export default function SelectInput({
   value,
-  onDifficultyChange,
+  onSelect,
+  label,
   labelUp = false,
+  options,
 }: SelectInputProps) {
-  const handleDifficultyChange = (
-    event: React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    const difficulty = parseInt(event.target.value, 10);
-    onDifficultyChange(difficulty);
+  const handleSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const select = parseInt(event.target.value, 10);
+    onSelect(select);
   };
 
   return (
-    <div className="flex items-center justify-center space-y-4">
+    <div className="flex w-ful items-center justify-center min-w-[250px]  ">
       <div
         className={`${labelUp ? "flex-col " : "flex items-center space-x-4"}`}
       >
-        <label htmlFor="difficulty" className={`${labelUp && "pl-2 "}`}>
-          Dificuldade:
-        </label>
+        {label && (
+          <label htmlFor="label" className={`${labelUp && "pl-2 "}`}>
+            {label}:
+          </label>
+        )}
 
-        <div className="relative w-64">
+        <div className="relative w-full">
           <select
-            id="difficulty"
+            id="select"
             value={value}
-            onChange={handleDifficultyChange}
+            onChange={handleSelect}
             className="block w-full py-2 pl-3 pr-10 border border-gray-300 rounded-lg text-gray-700 focus:outline-none focus:ring-2 appearance-none"
           >
             <option value={0}>Selecione...</option>
-            <option value={1}>Fácil</option>
-            <option value={2}>Média</option>
-            <option value={3}>Difícil</option>
+            {options.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
           </select>
 
           <span className="absolute right-5 top-1/2 transform -translate-y-1/2 text-gray-500">

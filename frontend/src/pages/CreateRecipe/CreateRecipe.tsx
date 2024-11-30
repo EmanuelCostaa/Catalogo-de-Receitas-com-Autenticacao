@@ -8,6 +8,8 @@ import SelectInput from "@/components/SelectInput/SelectInput";
 import Image from "next/image";
 import Header from "@/components/Header/Header";
 import Footer from "@/components/Footer/Footer";
+import userInterface from "@/interfaces/userInterface";
+import recipeInterface from "@/interfaces/recipeInterface";
 
 export function InputAddingredientes({
   onAddIngredient,
@@ -29,7 +31,7 @@ export function InputAddingredientes({
   };
 
   return (
-    <div className="flex flex-col  w-full">
+    <div className="flex flex-col w-full">
       <div className="pl-2">
         Adicionar ingredientes {"(coloque a quantidade ex: 3 cenouras)"}:
       </div>
@@ -54,7 +56,9 @@ export function InputAddingredientes({
 }
 
 export default function CreateRecipe() {
-  const [recipeToEdit, setRecipeToEdit] = useState<any | null>(null);
+  const [recipeToEdit, setRecipeToEdit] = useState<recipeInterface>(
+    {} as recipeInterface
+  );
   const [editMode, setEditMode] = useState(false);
   const [name, setName] = useState("");
   const [ingredientes, setIngredientes] = useState<string[]>([]);
@@ -62,10 +66,10 @@ export default function CreateRecipe() {
   const [tempoPreparo, setTempoPreparo] = useState("");
   const [dificuldade, setDificuldade] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [user, setUser] = useState<any | null>(null);
+  const [user, setUser] = useState<userInterface>({} as userInterface);
 
   const router = useRouter();
-  const { recipeId } = router.query;
+  const { id } = router.query;
 
   const getUserData = async () => {
     const user = localStorage.getItem("user");
@@ -73,36 +77,56 @@ export default function CreateRecipe() {
     if (user) {
       const userData = JSON.parse(user);
 
-      const userId = userData.sub;
-      const response = await fetch(`http://localhost:3001/user/${userId}`);
-      const data = await response.json();
-      setUser(data);
+      try {
+        const userId = userData.sub;
+        const response = await fetch(`http://localhost:3001/user/${userId}`);
+        const data = await response.json();
+        setUser(data);
+        if (!response.ok) {
+          throw new Error("Erro ao buscar usuário;");
+        }
+      } catch (error) {
+        alert("Ops! " + (error as Error).message);
+      }
     }
   };
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      router.push("/login");
+      return;
+    }
     getUserData();
   }, []);
 
   useEffect(() => {
-    if (recipeId !== undefined) getRecipeData();
-  }, [recipeId]);
+    if (id !== undefined) getRecipeData();
+  }, [id]);
 
   useEffect(() => {
     disableButton();
   }, [name, ingredientes, modoPreparo, tempoPreparo, dificuldade]);
 
   async function getRecipeData() {
-    const response = await fetch(`http://localhost:3001/recipes/${recipeId}`);
-    const data = await response.json();
-    if (data) {
-      setEditMode(true);
-      setRecipeToEdit(data);
-      setName(data.name);
-      setIngredientes(data.ingredientes);
-      setModoPreparo(data.modoPreparo);
-      setTempoPreparo(data.tempoPreparo);
-      setDificuldade(data.dificuldade);
+    try {
+      const response = await fetch(`http://localhost:3001/recipes/${id}`);
+      const data = await response.json();
+      if (data) {
+        setEditMode(true);
+        setRecipeToEdit(data);
+        setName(data.name);
+        setIngredientes(data.ingredientes);
+        setModoPreparo(data.modoPreparo);
+        setTempoPreparo(data.tempoPreparo);
+        setDificuldade(data.dificuldade);
+      }
+      if (!response.ok) {
+        throw new Error("Erro ao criar receita");
+      }
+    } catch (error) {
+      alert("Ops! " + (error as Error).message);
     }
   }
 
@@ -111,7 +135,7 @@ export default function CreateRecipe() {
       ? recipeToEdit.name == name &&
           recipeToEdit.ingredientes == ingredientes &&
           recipeToEdit.modoPreparo == modoPreparo &&
-          recipeToEdit.tempoPreparo == tempoPreparo &&
+          recipeToEdit.tempoPreparo == +tempoPreparo &&
           recipeToEdit.dificuldade == dificuldade
       : !name || !ingredientes || !modoPreparo || !tempoPreparo || !dificuldade;
   }
@@ -128,15 +152,15 @@ export default function CreateRecipe() {
 
   async function handleSubmit() {
     setLoading(true);
-    const userId = user.id;
+    const userId = user?.id;
 
     if (editMode) {
       try {
         const editRecipe = {
           name,
           ingredientes,
-          modoPreparo: +modoPreparo,
-          tempoPreparo,
+          modoPreparo,
+          tempoPreparo: +tempoPreparo,
           dificuldade,
           userId,
         };
@@ -157,10 +181,10 @@ export default function CreateRecipe() {
 
         alert("Receita atualizada com sucesso!");
       } catch (error) {
-        alert("Ops! Erro ao atualizar a receita.");
+        alert("Ops! " + (error as Error).message);
       }
       setLoading(false);
-      router.reload();
+      getRecipeData();
     } else {
       const newRecipe = {
         name,
@@ -185,23 +209,30 @@ export default function CreateRecipe() {
           throw new Error("Erro ao criar receita");
         }
 
-        const createdRecipe = await response.json();
         alert("Receita criada com sucesso!");
-        return createdRecipe;
       } catch (error) {
-        alert("Ops! Erro na criação da receita.");
+        alert("Ops! " + (error as Error).message);
       }
       setLoading(false);
-      router.push(`/`);
+      router.push(`/menu`);
     }
   }
 
   return (
     <div>
       <Header />
-      <div className="flex w-full h-screen justify-center overflow-x-hidden">
-        <div className="flex w-3/4 h-5/6 rounded-3xl bg-yellow-100 overflow-hidden shadow-2xl self-center gap-10">
-          <div className="flex flex-col w-1/2 h-3/4 align-middle mt-16 items-start pl-10 justify-center gap-6">
+      <div className="flex w-full h-full justify-center overflow-x-hidden px-4 flex-col ">
+        {editMode ? (
+          <div className="text-4xl font-bold pt-10 self-center">
+            EDITAR RECEITA
+          </div>
+        ) : (
+          <div className="text-4xl font-bold pt-10 self-center">
+            CRIAR RECEITA
+          </div>
+        )}
+        <div className="flex sm:m-20 p-10  sm:w-5/6 flex-wrap h-5/6 rounded-3xl bg-yellow-100 overflow-hidden shadow-2xl self-center gap-10 justify-center mt-6 max-w-screen-sm:mt-16 mb-10 max-w-screen-sm:w-screen">
+          <div className="flex flex-col w-5/12 min-w-[300px] h-auto max-w-screen-sm:justify-center align-middle  justify-center  gap-6">
             <Input
               value={name}
               onInputSubmit={(input) => setName(input)}
@@ -212,19 +243,24 @@ export default function CreateRecipe() {
             <Input
               value={modoPreparo}
               onInputSubmit={(input) => setModoPreparo(input)}
-              label="Modo de modoPreparo"
+              label="Modo de preparo"
               placeHolder="Escreva aqui..."
             />
             <Input
               value={tempoPreparo}
               onInputSubmit={(input) => setTempoPreparo(input)}
-              label="Tempo de modoPreparo (em minutos)"
+              label="Tempo de preparo (em minutos)"
               placeHolder="Escreva aqui..."
             />
             <SelectInput
+              onSelect={(select) => setDificuldade(select)}
               value={dificuldade}
-              onDifficultyChange={(select) => setDificuldade(select)}
-              labelUp={true}
+              label="Dificuldade"
+              options={[
+                { label: "Fácil", value: 1 },
+                { label: "Médio", value: 2 },
+                { label: "Difícil", value: 3 },
+              ]}
             />
             <Button
               text={editMode ? "Editar Receita" : "Criar Receita"}
@@ -234,18 +270,18 @@ export default function CreateRecipe() {
               loading={loading}
             />
           </div>
-          <div className="flex flex-col w-1/2 justify-start items-start mt-16 pr-6 ">
+          <div className="flex flex-col sm:w-5/12 min-w-[150px] max-w-screen-sm:w-11/12 justify-start max-w-screen-sm:overflow-y-auto items-center mt-6 max-w-screen-sm:mt-16 pr-6">
             <h3 className="text-lg font-semibold text-gray-700 mb-2">
               Ingredientes:
             </h3>
-            <div className="flex flex-col gap-2 w-full overflow-y-auto overflow-x-hidden">
+            <div className="flex flex-wrap gap-2 w-full max-h-80 max-w-screen-sm:max-h-96 overflow-y-auto overflow-x-hidden items-center">
               {ingredientes.map((ingredient, index) => (
                 <div
                   key={index}
-                  className="flex justify-between items-center px-4 py-2 bg-white text-gray-700 rounded-lg shadow-md cursor-pointer"
+                  className="flex justify-between items-center px-4 py-2 bg-white text-gray-700 rounded-lg shadow-md cursor-pointer max-w-screen-sm:w-1/4 w-full "
                   onClick={() => removeIngredient(index)}
                 >
-                  <span>{ingredient}</span>
+                  <span className="truncate">{ingredient}</span>
                   <span className="text-red-600 font-bold">X</span>
                 </div>
               ))}

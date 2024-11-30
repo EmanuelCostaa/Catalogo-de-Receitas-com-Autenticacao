@@ -35,32 +35,70 @@ export class RecipeService {
       where: { id },
     });
   }
+  async softDelete(id: number) {
+    return this.prismaService.recipe.update({
+      where: { id },
+      data: { isDeleted: true },
+    });
+  }
   async findWithFilters(filters: {
     userId?: number;
     searchString?: string;
     dificuldade?: number;
     isDeleted?: boolean;
+    skip?: number;
+    take?: number;
   }) {
-    return this.prismaService.recipe.findMany({
-      where: {
-        ...(filters.userId && { userId: filters.userId }),
-        ...(filters.dificuldade && { dificuldade: filters.dificuldade }),
-        ...(filters.isDeleted !== undefined && {
-          isDeleted: filters.isDeleted,
-        }),
-        ...(filters.searchString && {
-          OR: [
-            { name: { contains: filters.searchString, mode: 'insensitive' } },
-            {
-              modoPreparo: {
-                contains: filters.searchString,
-                mode: 'insensitive',
+    const [recipes, total] = await Promise.all([
+      this.prismaService.recipe.findMany({
+        skip: filters.skip,
+        take: filters.take,
+        where: {
+          ...(filters.userId && { userId: filters.userId }),
+          ...(filters.dificuldade && { dificuldade: filters.dificuldade }),
+          ...(filters.isDeleted !== undefined && {
+            isDeleted: filters.isDeleted,
+          }),
+          ...(filters.searchString && {
+            OR: [
+              { name: { contains: filters.searchString, mode: 'insensitive' } },
+              {
+                modoPreparo: {
+                  contains: filters.searchString,
+                  mode: 'insensitive',
+                },
               },
-            },
-            { ingredientes: { hasSome: [filters.searchString] } },
-          ],
-        }),
-      },
-    });
+              { ingredientes: { hasSome: [filters.searchString] } },
+            ],
+          }),
+        },
+      }),
+      this.prismaService.recipe.count({
+        where: {
+          ...(filters.userId && { userId: filters.userId }),
+          ...(filters.dificuldade && { dificuldade: filters.dificuldade }),
+          ...(filters.isDeleted !== undefined && {
+            isDeleted: filters.isDeleted,
+          }),
+          ...(filters.searchString && {
+            OR: [
+              { name: { contains: filters.searchString, mode: 'insensitive' } },
+              {
+                modoPreparo: {
+                  contains: filters.searchString,
+                  mode: 'insensitive',
+                },
+              },
+              { ingredientes: { hasSome: [filters.searchString] } },
+            ],
+          }),
+        },
+      }),
+    ]);
+
+    return {
+      recipes,
+      total,
+    };
   }
 }

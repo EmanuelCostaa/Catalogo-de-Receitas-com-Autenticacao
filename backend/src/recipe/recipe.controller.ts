@@ -24,6 +24,7 @@ export class RecipeController {
   }
 
   @Get()
+  @Get()
   async findWithFilters(
     @Query()
     filters: {
@@ -32,16 +33,32 @@ export class RecipeController {
       searchString?: string;
       dificuldade?: number;
       isDeleted?: string;
+      page?: number;
+      limit?: number;
     },
   ) {
     const userId = filters.userId ? Number(filters.userId) : undefined;
+    const page = filters.page || 1;
+    const limit = filters.limit || 10;
+    const skip = (page - 1) * limit;
 
-    return this.recipeService.findWithFilters({
+    const { recipes, total } = await this.recipeService.findWithFilters({
       userId,
       searchString: filters.searchString,
       dificuldade: +filters.dificuldade,
       isDeleted: filters.isDeleted == 'true',
+      skip,
+      take: +limit,
     });
+
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      recipes,
+      total,
+      totalPages,
+      currentPage: page,
+    };
   }
 
   @Get(':id')
@@ -56,6 +73,6 @@ export class RecipeController {
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.recipeService.remove(+id);
+    return this.recipeService.softDelete(+id);
   }
 }

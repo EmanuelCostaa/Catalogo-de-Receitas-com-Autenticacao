@@ -17,6 +17,9 @@ export default function Login() {
   useEffect(() => {
     disableButton();
   }, [email, password]);
+  useEffect(() => {
+    localStorage.clear();
+  }, []);
 
   async function getUserToken(): Promise<string | null> {
     try {
@@ -33,7 +36,7 @@ export default function Login() {
       const data = await response.json();
       return data.access_token;
     } catch (error) {
-      console.error((error as Error).message);
+      alert("Ops! " + (error as Error).message);
       return null;
     }
   }
@@ -46,14 +49,14 @@ export default function Login() {
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(userDecoded));
 
-      router.push("/");
+      router.push("/menu");
     } else {
       alert("Falha ao fazer login. Tente novamente.");
     }
     setLoadingLogin(false);
   }
 
-  function parseJwt(token: string): any {
+  function parseJwt(token: string): JSON | null {
     try {
       const base64Url = token.split(".")[1]; // Parte do payload
       const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/"); // Ajusta caracteres
@@ -65,7 +68,7 @@ export default function Login() {
       );
       return JSON.parse(jsonPayload); // Converte para objeto JSON
     } catch (error) {
-      console.error("Invalid token:", error);
+      alert("Ops! " + (error as Error).message);
       return null;
     }
   }

@@ -46,9 +46,9 @@ export default function CreateAccount() {
 
       const data = await response.json();
       alert("Usuário criado com sucesso!");
-      router.push("/Login/Login");
+      router.push("/login");
     } catch (error) {
-      alert("Ops! Erro ao registrar o usuário.");
+      alert("Ops! " + (error as Error).message);
       throw error;
     }
     setLoading(false);

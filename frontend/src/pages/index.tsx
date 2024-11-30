@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // import Image from "next/image";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Header from "@/components/Header/Header";
 import CardRecipe from "@/components/CardRecipe/CardRecipe";
 import SearchInput from "@/components/SearchInput/SearchInput";
@@ -10,26 +10,49 @@ import SelectInput from "@/components/SelectInput/SelectInput";
 import Button from "@/components/Button/Button";
 import Footer from "@/components/Footer/Footer";
 import { useRouter } from "next/router";
+import PageCounter from "@/components/PageCounter/PageCounter";
+import recipeInterface from "@/interfaces/recipeInterface";
 
 type User = {
   name: string;
   email: string;
 };
 export default function Home() {
-  const [recipes, setRecipes] = useState<any>([]);
+  const [recipes, setRecipes] = useState<recipeInterface[]>([]);
   const [searchValue, setSearch] = useState("");
   const [selectValue, setSelect] = useState(0);
-  const router = useRouter();
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
+  const [maxPage, setMaxPage] = useState(Number);
   const [user, setUser] = useState<User | null>(null);
+  const [loadingData, setLoadingData] = useState(false);
+  const router = useRouter();
 
-  const addRecipe = () => {
-    router.push("/CreateRecipe/CreateRecipe");
-  };
+  function addRecipe() {
+    router.push("/criar-receita");
+  }
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      router.push("/login");
+      return;
+    }
     getRecipes();
     getUserData();
   }, []);
+
+  useEffect(() => {
+    getRecipes();
+  }, [page]);
+  useEffect(() => {
+    if (page > 1) {
+      setPage(1);
+    } else {
+      getRecipes();
+    }
+  }, [pageSize]);
 
   useEffect(() => {
     getRecipes();
@@ -42,26 +65,45 @@ export default function Home() {
       const userData = JSON.parse(user);
 
       const userId = userData.sub;
-      const response = await fetch(`http://localhost:3001/user/${userId}`);
-      const data = await response.json();
-      setUser(data);
+      try {
+        const response = await fetch(`http://localhost:3001/user/${userId}`);
+        const data = await response.json();
+        setUser(data);
+        if (!response.ok) {
+          throw new Error(`Erro ao buscar usuário: ${response.statusText}`);
+        }
+      } catch (error) {
+        alert("Ops! " + (error as Error).message);
+      }
     }
   };
   const getRecipes = async () => {
+    setLoadingData(true);
     const queryFilter = `${searchValue ? "&searchString=" + searchValue : ""}${
       selectValue > 0 ? "&dificuldade=" + selectValue : ""
-    }`;
-    const response = await fetch(
-      `http://localhost:3001/recipes?isDeleted=false${queryFilter}`
-    );
-    const data = await response.json();
-    setRecipes(data);
+    }${page ? "&page=" + page : ""}${pageSize ? "&limit=" + pageSize : ""}`;
+
+    try {
+      const response = await fetch(
+        `http://localhost:3001/recipes?isDeleted=false${queryFilter}`
+      );
+      const data = await response.json();
+      setPage(data.currentPage);
+      setMaxPage(data.totalPages);
+      setRecipes(data.recipes);
+      setLoadingData(false);
+      if (!response.ok) {
+        throw new Error(`Erro ao buscar receitas.`);
+      }
+    } catch (error) {
+      alert("Ops! " + (error as Error).message);
+    }
   };
 
   return (
     <div>
       <Header />
-      <h1 className="flex align-middle justify-center p-5 text-2xl font-bold mt-6">
+      <h1 className="flex align-middle text-center justify-center p-5 text-2xl font-bold mt-6">
         {user ? (
           <p>
             OLÁ, {user.name.toUpperCase()}! AQUI VOCÊ ENCONTRA AS MELHORES
@@ -71,11 +113,17 @@ export default function Home() {
           <p>AQUI VOCÊ ENCONTRA AS MELHORES RECEITAS!</p>
         )}
       </h1>
-      <div className="flex gap-10 mt-4 ml-3">
+      <div className="flex gap-10 mt-4 ml-3 flex-wrap justify-center">
         <SearchInput onSearchSubmit={(search) => setSearch(search)} />
         <SelectInput
-          onDifficultyChange={(select) => setSelect(select)}
+          onSelect={(select) => setSelect(select)}
           value={selectValue}
+          label="Dificuldade"
+          options={[
+            { label: "Fácil", value: 1 },
+            { label: "Médio", value: 2 },
+            { label: "Difícil", value: 3 },
+          ]}
         />
         <Button
           text={"Adicionar Receita +"}
@@ -83,18 +131,32 @@ export default function Home() {
           onClick={addRecipe}
         />
       </div>
-      <div className="m-5 flex justify-around gap-10 flex-wrap overflow-y-auto">
-        {recipes.length > 0 ? (
-          <>
-            {recipes.map((recipe: any) => {
-              return <CardRecipe recipe={recipe} />;
-            })}
-          </>
-        ) : (
-          <div className="flex h-96 items-center">
-            Nenhuma receita encontrada.
-          </div>
-        )}
+      {loadingData ? (
+        <div>Carregando...</div>
+      ) : (
+        <div className="m-5 flex justify-center flex-wrap  gap-10  overflow-y-auto">
+          {recipes.length > 0 ? (
+            <>
+              {recipes.map((recipe: recipeInterface) => {
+                return <CardRecipe recipe={recipe} key={recipe.id} />;
+              })}
+            </>
+          ) : (
+            <div className="flex h-96 items-center">
+              Nenhuma receita encontrada.
+            </div>
+          )}
+        </div>
+      )}
+
+      <div className="flex justify-center">
+        <PageCounter
+          page={page}
+          maxPage={maxPage}
+          pageSize={pageSize}
+          changePage={setPage}
+          changePageSize={setPageSize}
+        />
       </div>
       <Footer />
     </div>
