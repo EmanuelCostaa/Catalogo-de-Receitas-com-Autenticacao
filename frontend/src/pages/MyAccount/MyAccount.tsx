@@ -213,7 +213,7 @@ export default function MyAccount({}) {
                     {user?.name.toUpperCase()}
                   </div>
                   <div className="flex flex-wrap justify-center items-center">
-                    <span className="font-bold">Email: </span>
+                    <span className="font-bold">Email: </span>&nbsp;
                     {user?.email}
                   </div>
 
