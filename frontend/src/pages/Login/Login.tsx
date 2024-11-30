@@ -50,8 +50,6 @@ export default function Login() {
       localStorage.setItem("user", JSON.stringify(userDecoded));
 
       router.push("/menu");
-    } else {
-      alert("Falha ao fazer login. Tente novamente.");
     }
     setLoadingLogin(false);
   }

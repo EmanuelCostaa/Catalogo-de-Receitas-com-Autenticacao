@@ -131,7 +131,9 @@ export default function Home() {
         />
       </div>
       {loadingData ? (
-        <div>Carregando...</div>
+        <div className="flex justify-center items-center p-20 h-96 w-screen">
+          Carregando...
+        </div>
       ) : (
         <div className="m-5 flex justify-center flex-wrap  gap-10  overflow-y-auto">
           {recipes.length > 0 ? (

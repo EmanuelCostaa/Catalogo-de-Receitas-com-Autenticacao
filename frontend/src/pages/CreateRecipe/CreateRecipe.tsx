@@ -251,6 +251,7 @@ export default function CreateRecipe() {
               onInputSubmit={(input) => setTempoPreparo(input)}
               label="Tempo de preparo (em minutos)"
               placeHolder="Escreva aqui..."
+              number
             />
             <SelectInput
               onSelect={(select) => setDificuldade(select)}

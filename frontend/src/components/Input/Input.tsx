@@ -4,6 +4,7 @@ interface InputProps {
   placeHolder: string;
   label: string;
   password?: boolean;
+  number?: boolean;
 }
 
 export default function Input({
@@ -12,6 +13,7 @@ export default function Input({
   placeHolder,
   label,
   password,
+  number,
 }: InputProps) {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onInputSubmit(e.target.value);
@@ -22,11 +24,13 @@ export default function Input({
       <div className="flex flex-col w-full">
         <div className="pl-2">{label}:</div>
         <input
-          type={password ? "password" : "text"}
+          type={password ? "password" : number ? "number" : "text"}
           value={value}
           onChange={handleInputChange}
           placeholder={placeHolder}
-          className="w-full py-2 pl-2 pr-2 border border-gray-300 rounded-3xl text-gray-700 focus:outline-none focus:ring-1"
+          className={`${
+            number && "appearance-none focus:outline-none "
+          } w-full py-2 pl-2 pr-2 border border-gray-300 rounded-3xl text-gray-700 focus:outline-none focus:ring-1`}
         />
       </div>
     </div>

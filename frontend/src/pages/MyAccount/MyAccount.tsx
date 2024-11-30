@@ -256,7 +256,23 @@ export default function MyAccount({}) {
               </div>
             )}
       </div>
-      {userRecipes.length > 0 ? (
+      {userRecipes.length === 0 && searchValue === "" && selectValue === 0 ? (
+        <div className="flex justify-center p-10 gap-10 flex-col items-center">
+          <div className="text-xl">
+            Você não tem nenhuma receita ainda! :{"("}
+          </div>
+          <div className="text-xl">
+            Mas você pode adicionar uma agora! :{")"}
+          </div>
+          <div className="">
+            <Button
+              text={"Adicionar Receita +"}
+              color={"green"}
+              onClick={addRecipe}
+            />
+          </div>
+        </div>
+      ) : userRecipes.length > 0 ? (
         <div className="flex justify-center">
           <PageCounter
             page={page}
@@ -267,21 +283,8 @@ export default function MyAccount({}) {
           />
         </div>
       ) : (
-        <div className="flex justify-center p-10 gap-10 flex-col items-center">
-          <div className="text-xl">
-            Você não tem nenhuma receita ainda! :{"("}
-          </div>
-          <div className="text-xl">
-            Mas você pode adicionar uma agora! :{")"}
-          </div>
-          <div className="">
-            {" "}
-            <Button
-              text={"Adicionar Receita +"}
-              color={"green"}
-              onClick={addRecipe}
-            />
-          </div>
+        <div className="flex justify-center p-20">
+          Nenhuma receita criada por você encontrada com esse filtro {":("}
         </div>
       )}
       <Footer />
