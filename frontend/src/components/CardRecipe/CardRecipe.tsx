@@ -48,7 +48,7 @@ export default function CardRecipe({ recipe }: any) {
   };
   return (
     <div
-      className="flex-col w-96 h-64 rounded-3xl bg-yellow-200 overflow-hidden shadow-lg hover:cursor-pointer"
+      className="flex-col w-1/3 h-64 rounded-3xl bg-yellow-200 overflow-hidden shadow-lg hover:cursor-pointer"
       onClick={openRecipe}
     >
       <div className="h-1/2 ">
@@ -76,7 +76,7 @@ export default function CardRecipe({ recipe }: any) {
         </p>
         <div className="flex gap-1">
           <Image src="/clock.png" alt="ClockIcon" width={20} height={20} />
-          <p className="text-sm"> {recipe.tempoPreparo}m</p>
+          <p className="text-sm"> {recipe.tempoPreparo} min</p>
         </div>
       </div>
     </div>

@@ -7,6 +7,8 @@ import {
   Param,
   Delete,
   Query,
+  BadRequestException,
+  Search,
 } from '@nestjs/common';
 import { RecipeService } from './recipe.service';
 import { CreateRecipeDto } from './dto/create-recipe.dto';
@@ -22,8 +24,24 @@ export class RecipeController {
   }
 
   @Get()
-  findAll() {
-    return this.recipeService.findAll();
+  async findWithFilters(
+    @Query()
+    filters: {
+      userId?: number;
+      name?: string;
+      searchString?: string;
+      dificuldade?: number;
+      isDeleted?: string;
+    },
+  ) {
+    const userId = filters.userId ? Number(filters.userId) : undefined;
+
+    return this.recipeService.findWithFilters({
+      userId,
+      searchString: filters.searchString,
+      dificuldade: +filters.dificuldade,
+      isDeleted: filters.isDeleted == 'true',
+    });
   }
 
   @Get(':id')
@@ -39,10 +57,5 @@ export class RecipeController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.recipeService.remove(+id);
-  }
-
-  @Get('search')
-  search(@Query() filters: Partial<CreateRecipeDto>) {
-    return this.recipeService.findWithFilters(filters);
   }
 }

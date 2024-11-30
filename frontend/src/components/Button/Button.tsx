@@ -3,16 +3,27 @@
 interface ButtonProps {
   text: string;
   color: string;
-  onClick: () => void; // Definindo a tipagem da função onClick
+  onClick: () => void;
+  disabled?: boolean;
+  loading?: boolean;
 }
-export default function Button({ text, color, onClick }: ButtonProps) {
+export default function Button({
+  text,
+  color,
+  onClick,
+  disabled,
+  loading,
+}: ButtonProps) {
   return (
     <div className="flex items-center justify-center">
       <button
         onClick={onClick}
-        className={`px-6 py-3 bg-${color}-500 text-white font-semibold rounded-lg shadow-md hover:bg-${color}-800 `}
+        disabled={disabled}
+        className={`px-6 py-3 bg-${color}-500 text-white font-semibold rounded-lg shadow-md hover:bg-${color}-800 ${
+          disabled && "inset-0 bg-black bg-opacity-50 cursor-not-allowed"
+        }`}
       >
-        {text}
+        {loading ? "Carregando..." : text}
       </button>
     </div>
   );

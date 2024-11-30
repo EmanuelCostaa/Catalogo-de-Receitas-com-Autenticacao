@@ -20,9 +20,13 @@ export default function Header() {
           alt="logo"
         />
       </div>
-      <div className="flex justify-between gap-6 self-end text-xl text-white pb-1">
-        <Link href="/">Home</Link>
-        <Link href="/About/About">About</Link>
+      <div className="flex gap-6 justify-center self-end text-xl text-white pb-1 pr-28">
+        <Link href="/" className=" hover:text-yellow-300">
+          Home
+        </Link>
+        <Link href="/About/About" className=" hover:text-yellow-300">
+          About
+        </Link>
       </div>
       <div
         className="flex pr-4 self-center cursor-pointer"

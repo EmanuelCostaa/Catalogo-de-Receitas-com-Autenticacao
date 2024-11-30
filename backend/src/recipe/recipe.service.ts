@@ -5,52 +5,61 @@ import { PrismaService } from 'src/db/prisma.service';
 
 @Injectable()
 export class RecipeService {
-  constructor(private readonly pismaService: PrismaService) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
   create(createRecipeDto: CreateRecipeDto) {
-    return this.pismaService.recipe.create({
+    return this.prismaService.recipe.create({
       data: createRecipeDto,
     });
   }
 
   findAll() {
-    return this.pismaService.recipe.findMany();
+    return this.prismaService.recipe.findMany();
   }
 
   findOne(id: number) {
-    return this.pismaService.recipe.findUnique({
+    return this.prismaService.recipe.findUnique({
       where: { id },
     });
   }
 
   update(id: number, updateRecipeDto: UpdateRecipeDto) {
-    return this.pismaService.recipe.update({
+    return this.prismaService.recipe.update({
       where: { id },
       data: updateRecipeDto,
     });
   }
 
   remove(id: number) {
-    return this.pismaService.recipe.delete({
+    return this.prismaService.recipe.delete({
       where: { id },
     });
   }
-
-  findWithFilters(filters: Partial<CreateRecipeDto>) {
-    return this.pismaService.recipe.findMany({
+  async findWithFilters(filters: {
+    userId?: number;
+    searchString?: string;
+    dificuldade?: number;
+    isDeleted?: boolean;
+  }) {
+    return this.prismaService.recipe.findMany({
       where: {
-        ...(filters.name && {
-          name: { contains: filters.name, mode: 'insensitive' },
-        }),
-        ...(filters.ingredientes && {
-          ingredientes: { hasSome: filters.ingredientes },
-        }),
-        ...(filters.modoPreparo && {
-          modoPreparo: { contains: filters.modoPreparo, mode: 'insensitive' },
-        }),
-        ...(filters.tempoPreparo && { tempoPreparo: filters.tempoPreparo }),
-        ...(filters.dificuldade && { dificuldade: filters.dificuldade }),
         ...(filters.userId && { userId: filters.userId }),
+        ...(filters.dificuldade && { dificuldade: filters.dificuldade }),
+        ...(filters.isDeleted !== undefined && {
+          isDeleted: filters.isDeleted,
+        }),
+        ...(filters.searchString && {
+          OR: [
+            { name: { contains: filters.searchString, mode: 'insensitive' } },
+            {
+              modoPreparo: {
+                contains: filters.searchString,
+                mode: 'insensitive',
+              },
+            },
+            { ingredientes: { hasSome: [filters.searchString] } },
+          ],
+        }),
       },
     });
   }

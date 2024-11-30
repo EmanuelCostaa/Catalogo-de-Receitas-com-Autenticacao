@@ -11,9 +11,26 @@ export default function RecipeInfo() {
   const { recipeId } = router.query;
 
   const [recipe, setRecipe] = useState<any>(null); // Inicialmente null
-  const [user, setUser] = useState<any>(null); // Inicialmente null
+  const [recipeUser, setRecipeUser] = useState<any>(null); // Inicialmente null
+  const [user, setUser] = useState(null);
 
-  // Buscar receita com base no ID
+  const getUserData = async () => {
+    const user = localStorage.getItem("user");
+
+    if (user) {
+      const userData = JSON.parse(user);
+
+      const userId = userData.sub;
+      const response = await fetch(`http://localhost:3001/user/${userId}`);
+      const data = await response.json();
+      setUser(data);
+    }
+  };
+
+  useEffect(() => {
+    getUserData();
+  }, []);
+
   useEffect(() => {
     if (recipeId) {
       getRecipe();
@@ -35,19 +52,18 @@ export default function RecipeInfo() {
 
   useEffect(() => {
     if (recipe?.userId) {
-      getUser(recipe.userId);
+      getRecipeUser(recipe.userId);
     }
   }, [recipe]);
 
-  const getUser = async (userId: string) => {
+  const getRecipeUser = async (userId: string) => {
     try {
       const response = await fetch(`http://localhost:3001/user/${userId}`);
       if (!response.ok) {
         throw new Error(`Erro ao buscar usuário: ${response.statusText}`);
       }
       const data = await response.json();
-      setUser(data);
-      console.log(data);
+      setRecipeUser(data);
     } catch (error) {
       console.error(error);
     }
@@ -58,8 +74,12 @@ export default function RecipeInfo() {
       <Header />
       <div className="p-4">
         <div className="flex mt-10 mb-14 justify-center">
-          {recipe && user ? (
-            <CardRecipeInfo recipe={recipe} user={user} />
+          {recipe && recipeUser ? (
+            <CardRecipeInfo
+              recipe={recipe}
+              user={user}
+              recipeUser={recipeUser}
+            />
           ) : (
             <p>Carregando dados...</p>
           )}

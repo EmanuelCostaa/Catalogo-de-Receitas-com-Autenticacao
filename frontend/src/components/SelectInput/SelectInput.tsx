@@ -1,21 +1,20 @@
-import { useState } from "react";
+import React from "react";
 
 interface SelectInputProps {
+  value: number;
   onDifficultyChange: (difficulty: number) => void;
-  labelUp: boolean;
+  labelUp?: boolean;
 }
 
 export default function SelectInput({
+  value,
   onDifficultyChange,
   labelUp = false,
 }: SelectInputProps) {
-  const [selectedDifficulty, setSelectedDifficulty] = useState<number>(0);
-
   const handleDifficultyChange = (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
     const difficulty = parseInt(event.target.value, 10);
-    setSelectedDifficulty(difficulty);
     onDifficultyChange(difficulty);
   };
 
@@ -31,9 +30,9 @@ export default function SelectInput({
         <div className="relative w-64">
           <select
             id="difficulty"
-            value={selectedDifficulty}
+            value={value}
             onChange={handleDifficultyChange}
-            className="block w-full py-2 pl-3 pr-10 border border-gray-300 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-red-700 focus:border-red-700 appearance-none"
+            className="block w-full py-2 pl-3 pr-10 border border-gray-300 rounded-lg text-gray-700 focus:outline-none focus:ring-2 appearance-none"
           >
             <option value={0}>Selecione...</option>
             <option value={1}>Fácil</option>
