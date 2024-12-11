@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-key */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import Header from "@/components/Header/Header";
 import CardRecipe from "@/components/CardRecipe/CardRecipe";
 import SearchInput from "@/components/SearchInput/SearchInput";
